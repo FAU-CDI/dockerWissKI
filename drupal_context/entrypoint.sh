@@ -53,16 +53,6 @@ if ! [ -d /opt/drupal/web ]
 		unzip web/libraries/main.zip -d web/libraries/
 		mv web/libraries/wisski-mirador-integration-main web/libraries/wisski-mirador-integration
 
-		# Replace database settings
-		cp web/sites/default/default.settings.php web/sites/default/settings.php
-		printf "\$databases['default']['default'] = [
-'database' => '%s',
-'username' => '%s',
-'password' => '%s',
-'host' => '%s',
-'driver' => '%s'
-];\n" "${DB_NAME}" "${DB_USER}" "${DB_PASSWORD}" "${DB_HOST}" "${DB_DRIVER}" >> web/sites/default/settings.php
-
 		# Make drush available in the whole container
 		ln -s /opt/drupal/vendor/bin/drush /usr/local/bin
 
@@ -79,9 +69,7 @@ if ! [ -d /opt/drupal/web ]
 
 		# Install the site
 		drush site:install \
-			--db-url="${DB_HOST}" \
-			--db-su="${DB_USER}" \
-			--db-su-pw="${DB_PASSWORD}" \
+			--db-url="${DB_DRIVER}://${DB_USER}:{$DB_PASSWORD}@${DB_HOST}/${DB_NAME}" \
 			--site-name="${SITE_NAME}" \
 			--account-name="${DRUPAL_USER}" \
 			--account-pass="${DRUPAL_PASSWORD}" \
