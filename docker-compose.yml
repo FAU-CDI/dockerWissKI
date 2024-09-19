@@ -1,37 +1,32 @@
-version: '3.7'
-
 services:
-
   drupal:
-    image: rnsrk/drupal_wisski:${DRUPAL_VERSION}
+    image: ghcr.io/soda-collections-objects-data-literacy/wisski-base-image:latest
     restart: always
     depends_on:
-      - graphdb
-    build:
-      context: ./drupal_context
-      dockerfile: Dockerfile
-      args:  # Pass environment variables to Dockerfile
-        DB_NAME: ${DB_NAME}
-        DB_USER: ${DB_USER}
-        DB_PASSWORD: ${DB_PASSWORD}
-        DB_HOST: ${DB_HOST}
-        DB_DRIVER: ${DB_DRIVER}
+      mariadb:
+        condition: service_healthy
+        restart: true
     environment:
-      DRUPAL_VERSION: ${DRUPAL_VERSION}
       DRUPAL_USER: ${DRUPAL_USER}
       DRUPAL_PASSWORD: ${DRUPAL_PASSWORD}
       SITE_NAME: ${SITE_NAME}
+      WISSKI_BASE_RECIPE_VERSION: ${WISSKI_BASE_RECIPE_VERSION}
+      TS_USERNAME: ${TS_USERNAME}
+      TS_PASSWORD: ${TS_PASSWORD}
+      TS_REPOSITORY: ${TS_REPOSITORY}
       DEFAULT_GRAPH: ${DEFAULT_GRAPH}
+      TS_READ_URL: http://graphdb:7200/repositories/${TS_REPOSITORY}
+      TS_WRITE_URL: http://graphdb:7200/repositories/${TS_REPOSITORY}/statements
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_HOST: ${DB_HOST}
       DB_DRIVER: ${DB_DRIVER}
-    volumes:
-       - ./volumes/drupal-data:/opt/drupal
-       - ./volumes/private_files:/var/www/private_files
     ports:
       - "${DRUPAL_PORT}:80"
+    volumes:
+       - drupal-data:/opt/drupal
+       - private_files:/var/www/private_files
 
   mariadb:
     image: mariadb:10.10
@@ -42,28 +37,33 @@ services:
       MARIADB_PASSWORD: ${DB_PASSWORD}
       MARIADB_USER: ${DB_USER}
       MARIADB_DATABASE: ${DB_NAME}
-    volumes:
-      - ./volumes/mariadb-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+      start_period: 1m
+      start_interval: 10s
+      interval: 1m
+      timeout: 5s
+      retries: 3
     ports:
       - "${DB_PORT}:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql
 
   solr:
     image: solr:9
     restart: always
-    volumes:
-      - solr-data:/var/solr
     environment:
       SOLR_JAVA_MEM: "-Xms256M -Xmx512M"
     ports:
       - "${SOLR_PORT}:8983"
+    volumes:
+      - solr-data:/var/solr
 
   graphdb:
     restart: always
     build:
       context: ./graphdb_context
       dockerfile: Dockerfile
-    volumes:
-      - ./volumes/graphdb-data:/graphdb
     environment:
       GDB_JAVA_OPTS: >-
         -Dgraphdb.home=/graphdb/home
@@ -72,6 +72,8 @@ services:
         -Xmx1024m
     ports:
       - "${GRAPHDB_PORT}:7200"
+    volumes:
+      - graphdb-data:/graphdb
 
   adminer:
     image: adminer
@@ -80,5 +82,7 @@ services:
       - "${DB_ADMINISTRATION_PORT}:8080"
 volumes:
   solr-data:
-
-# vim: tabstop=2 softtabstop=0 expandtab shiftwidth=2 smarttab
+  graphdb-data:
+  drupal-data:
+  private_files:
+  mariadb-data:
