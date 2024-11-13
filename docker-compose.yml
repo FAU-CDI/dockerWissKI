@@ -7,6 +7,10 @@ services:
         condition: service_healthy
         restart: true
     environment:
+      DOMAIN: localhost
+      DRUPAL_TRUSTED_HOST: localhost
+      WISSKI_GRAIN_YEAST_WATER_VERSION: dev-main
+      WISSKI_FLAVOURS: NULL
       DRUPAL_USER: ${DRUPAL_USER}
       DRUPAL_PASSWORD: ${DRUPAL_PASSWORD}
       SITE_NAME: ${SITE_NAME}
@@ -21,6 +25,7 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
       DB_DRIVER: ${DB_DRIVER}
     ports:
       - "${DRUPAL_PORT}:80"
