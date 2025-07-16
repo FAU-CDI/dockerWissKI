@@ -8,13 +8,13 @@ Clone the repository. In case of problems with large files just download the zip
 ### Linux
 Install [Docker](https://docs.docker.com/get-docker/). You may want to apply some [post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/). 
 
+### Mac
+Install [Docker](https://docs.docker.com/get-docker), or use something like [Colima](https://github.com/abiosoft/colima). 
+
 ### Windows
 Install [Docker Desktop](https://docs.docker.com/get-docker/). You may need to install the [WSL 2 Linux kernel](https://docs.microsoft.com/de-de/windows/wsl/install-win10).  
 
 **Beware if you are using Virtualization software like VirtualBox, they may conflict with your Docker-Software in Windows.**
-
-You need a GraphDB standalone server zip file. Apply on the [GraphDB free downloadpage](https://www.ontotext.com/products/graphdb/graphdb-free/), they will send you an email with a link to the stand alone server; safe the file as `graphdb.zip` in the `graphdb_context` folder. 
-
 ## Setup
 Open `.env.sample` file, provide the credentials and ports according to your needs and save it as `.env`.
 
@@ -76,4 +76,11 @@ services:
 ```
 This will overwrite the default WissKI installtion from the Docker image.
 
+You might also want to use the development image (which turns on `xdebug` and disables `xdebug`). 
+To do so, you may replace the image of the drupal service:
 
+```yaml
+services:
+  drupal:
+    image: ghcr.io/soda-collections-objects-data-literacy/wisski-dev-image:latest
+```
