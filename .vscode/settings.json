@@ -2,6 +2,7 @@
     "files.associations": {
         // all of the drupal settings
         "**/*.inc": "php",
+        "**/*.install": "php",
         "**/*.module": "php",
     }
 }
