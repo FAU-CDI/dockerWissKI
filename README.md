@@ -64,25 +64,28 @@ In case you want to develop or install custom Drupal modules, the `docker-compos
 For installation just copy the module source code into `custom` and you should be able to install the module via the Drupal `Extend` Module interface under [`/admin/modules`](http://localhost/admin/modules), or via the `drush` CLI (`docker compose exec drupal drush en MY_MODULE`).
 
 ### WissKI development
+
 In case you wish to do WissKI development, start the stack once with `docker compose up -d` and wait for the Drupal/WissKI installation to finish.
 You can check on the progress with `docker compose logs -f drupal`.
 Once the installation is finished, shut down the stack with `docker compose down`.
+
 Now clone the [WissKI repository](https://git.drupalcode.org/project/wisski) into this repo: `git clone https://git.drupalcode.org/project/wisski.git`.
 To use this clone you will have to mount the cloned repo into the `/modules/contrib` directory of the docker container.
-To do this add the following line into the `volumes` section of the `drupal` service in the `docker-compose.yml`.
-```yaml
-services:
-  drupal:
-    volumes:
-      - ./wisski:/opt/drupal/web/modules/contrib/wisski
-```
-This will overwrite the default WissKI installation from the Docker image.
-
-You might also want to use the development image (which turns on `xdebug` and disables `xdebug`). 
-To do so, you may replace the image of the drupal service:
+To do this add the following line into the `drupal` service:
 
 ```yaml
 services:
   drupal:
+    # run the development image - disables opcache and turns on xdebug
     image: ghcr.io/soda-collections-objects-data-literacy/wisski-dev-image:latest
+    # run as the root user - to allow vscode run properly
+    user: root
+    
+    volumes:
+      # mount the WissKI installation
+      - ./wisski:/opt/drupal/web/modules/contrib/wisski
+      # mount vscode settings
+      - .vscode/settings.json:/var/www/html/.vscode/settings.json:ro
 ```
+
+Some of the lines may already exist in commented out form. 
