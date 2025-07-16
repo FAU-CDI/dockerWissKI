@@ -1,5 +1,7 @@
 # Docker WissKI
 
+<!-- spellchecker:words WissKI adminer drush -->
+
 ## Prerequisites
 
 ### Get the data
@@ -58,7 +60,7 @@ gets you into the drupal container.
 You find these volumes under `/var/lib/docker/volumes/<compose-prefix>_<volume-name>/_data` (Linux - you have to be root to access) or at the location shown in your Docker Desktop settings (Premium Feature). Please check the right permissions, if you copy or alter files and folders.
 
 ### Custom Drupal modules
-In case you want to develop or install custom Drupal modules, the `docker-compose.yml` also mounts the `custom` directory in this repo to the `modules/custom` directroy in the Drupal container.
+In case you want to develop or install custom Drupal modules, the `docker-compose.yml` also mounts the `custom` directory in this repo to the `modules/custom` directory in the Drupal container.
 For installation just copy the module source code into `custom` and you should be able to install the module via the Drupal `Extend` Module interface under [`/admin/modules`](http://localhost/admin/modules), or via the `drush` CLI (`docker compose exec drupal drush en MY_MODULE`).
 
 ### WissKI development
@@ -74,7 +76,7 @@ services:
     volumes:
       - ./wisski:/opt/drupal/web/modules/contrib/wisski
 ```
-This will overwrite the default WissKI installtion from the Docker image.
+This will overwrite the default WissKI installation from the Docker image.
 
 You might also want to use the development image (which turns on `xdebug` and disables `xdebug`). 
 To do so, you may replace the image of the drupal service:
